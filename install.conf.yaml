@@ -2,7 +2,8 @@
     {
         "defaults": {
             "link": {
-                "relink": true
+                "relink": true,
+                "force": true
             }
         }
     },
