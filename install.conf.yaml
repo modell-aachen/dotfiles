@@ -20,7 +20,8 @@
             "~/.bashrc": "bash/bashrc",
             "~/.bash_aliases": "bash/bash_aliases",
             "~/.vim": "vim/vim",
-            "~/.vimrc": "vim/vimrc"
+            "~/.vimrc": "vim/vimrc",
+            "~/.buildcontrib": "buildcontrib"
         }
     },
     {
