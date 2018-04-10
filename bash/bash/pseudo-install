@@ -3,8 +3,8 @@ pseudo-install() {
     cd /var/www/qwikis/qwiki;
     for repo in "$@"
     do
-        sudo -u www-data ./pseudo-install.pl -u "$repo";
-        sudo -u www-data ./pseudo-install.pl -e "$repo";
+        sudo "HOME=$HOME" -u www-data ./pseudo-install.pl -u "$repo";
+        sudo "HOME=$HOME" -u www-data ./pseudo-install.pl -e "$repo";
     done
     cd $c_d;
 }
