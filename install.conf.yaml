@@ -13,7 +13,6 @@
     {
         "link": {
             "~/.dotfiles": "",
-            "~/.dotfiles/.gitignore": "git/gitignore",
             "~/.inputrc": "bash/inputrc",
             "~/.profile": "bash/profile",
             "~/.bash": "bash/bash",
