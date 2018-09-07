@@ -11,7 +11,8 @@ test-foswiki () {
         docker run -it --rm \
             -v "$PWD":/usr/working \
             -w /usr/working quay.io/modellaachen/perl-test:latest \
-            perl backend-tests/test.pl
+            perl backend-tests/test.pl \
+            | egrep --color "\b(not ok|failed)\b|$"
     }
 
     trap sigint_handler SIGINT
