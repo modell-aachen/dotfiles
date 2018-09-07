@@ -17,7 +17,7 @@ test-foswiki () {
     trap sigint_handler SIGINT
 
     while true; do
-        inotifywait -e CLOSE_WRITE --fromfile $FILE_WATCHES
         watcher
+        inotifywait -e CLOSE_WRITE --fromfile $FILE_WATCHES
     done
 }
