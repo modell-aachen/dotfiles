@@ -7,5 +7,6 @@ pseudo-install() {
         sudo "HOME=$HOME" -u www-data ./pseudo-install.pl -e "$repo";
     done
     cd $c_d;
+    sudo systemctl restart apacheRestart;
 }
 
