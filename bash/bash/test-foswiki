@@ -1,24 +1,79 @@
 test-foswiki () {
-    WATCH_PATH=`pwd`;
-    FILE_WATCHES=`mktemp`;
-    find $WATCH_PATH -name '*.pm' -o -name '*.pl' -o -name '*.po' > $FILE_WATCHES
+    GREEN="1;32"
+    YELLOW="1;33"
+    GREP="egrep --line-buffered --color=always"
+    PASSED_TEST="\b(^ok [0-9]+)\b|"
+    PASSED_TEST_REMOVE="\b(^ok [0-9]+)\b"
+    INVERT_MATCH=""
+    CLEAR=""
+    WATCH=false
+
+    usage() {
+        printf -v text "%s" \
+            "test-fosiki [OPTION...]\n" \
+            "    -c, --clear        clears shell before test run\n" \
+            "    -f, --fail-only    shows failed tests only\n" \
+            "    -w, --watch        watches backend tests\n"
+        printf "$text"
+        exit
+    }
+
+    OPTS=`getopt -o cfwh --long clear,fail-only,watch,help -- "$@"`
+    if [ $? != 0 ] ; then echo "Failed parsing options." >&2 ; exit 1 ; fi
+
+    eval set -- "$OPTS"
+
+    while true; do
+        case "$1" in
+            -c | --clear )
+                CLEAR="clear"
+                shift ;;
+            -w | --watch )
+                WATCH=true
+                shift ;;
+            -f | --fail-only )
+                PASSED_TEST=$PASSED_TEST_REMOVE
+                INVERT_MATCH="-v"
+                shift ;;
+            -h | --help )    HELP=true
+                usage
+                shift ;;
+            -- )
+                shift
+                break ;;
+            * )
+                break ;;
+        esac
+    done
+
+    WATCH_PATH=`pwd`
+    FILE_WATCHES=`find $WATCH_PATH -name '*.pm' -o -name '*.pl' -o -name '*.po'`
 
     sigint_handler() {
         exit
     }
 
-    watcher() {
+    run_tests() {
+        $CLEAR
         docker run -it --rm \
             -v "$PWD":/usr/working \
             -w /usr/working quay.io/modellaachen/perl-test:latest \
             perl backend-tests/test.pl \
-            | egrep --color "\b(not ok|failed)\b|$"
+            | GREP_COLORS="ms=$GREEN" $GREP $INVERT_MATCH "$PASSED_TEST" \
+            | $GREP "\b(not ok.*|failed [0-9]+)\b|" \
+            | GREP_COLORS="ms=$YELLOW" $GREP "^# |"
+        printf "Ran all test suites.\n\n"
     }
 
     trap sigint_handler SIGINT
 
-    while true; do
-        watcher
-        inotifywait -e CLOSE_WRITE --fromfile $FILE_WATCHES
-    done
+    if $WATCH; then
+        while true; do
+            run_tests
+            inotifywait -e CLOSE_WRITE $FILE_WATCHES 2>&1 /dev/null \
+                | $GREP -v "(Setting up watches.|Watches established.)"
+        done
+    else
+        run_tests
+    fi
 }
