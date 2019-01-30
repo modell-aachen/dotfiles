@@ -10,12 +10,64 @@ test-foswiki() {
             "    -c, --no-clear     does not clear shell before tests are run\n" \
             "    -p, --no-pull      does not pull docker image\n" \
             "    -v, --verbose      shows failed tests only\n" \
-            "    -w, --watch        watches backend tests\n"
+            "    -w, --watch        watches backend tests\n" \
+            "        --create       creates a new folder and testrunner in \$repo\n"
         printf "$text"
         exit
     }
 
-    OPTS=`getopt -o cpvwh --long no-clear,no-pull,verbose,watch,help -- "$@"`
+    create_infrastructure() {
+        TEST_DIR=backend-tests
+        SPEC_DIR=$TEST_DIR/Spec
+        mkdir -p $SPEC_DIR
+
+        cat > $TEST_DIR/test.pl << EOL
+package Test;
+
+use strict;
+use warnings;
+
+use File::Basename;
+use Cwd qw( getcwd abs_path );
+
+use utf8;
+use Test::Spec;
+use Jasmine::Spy;
+
+
+sub getSpecs {
+    my (\$pattern) = @_;
+
+    my \$cwd = getcwd();
+    chdir dirname(__FILE__);
+    my @specs = map { abs_path(\$_) } glob(\$pattern);
+    chdir \$cwd;
+
+    return @specs;
+}
+
+my @specs = getSpecs("Spec/**Spec.pm Spec/**Spec.pl");
+
+for my \$spec (@specs) {
+    print("\$spec\n");
+    spec_helper \$spec;
+}
+
+runtests unless caller;
+EOL
+
+        cat > $SPEC_DIR/ExampleSpec.pm << EOL
+describe "the example spec" => sub {
+    it "verifies the calculation" => sub {
+        is(5+5, 10);
+    };
+};
+EOL
+
+        exit
+    }
+
+    OPTS=`getopt -o cpvwh --long no-clear,no-pull,verbose,watch,create,help -- "$@"`
     if [ $? != 0 ] ; then echo "Failed parsing options." >&2 ; exit 1 ; fi
 
     eval set -- "$OPTS"
@@ -34,6 +86,9 @@ test-foswiki() {
             -v | --verbose )
                 IS_VERBOSE=true
                 shift ;;
+            --create )
+                create_infrastructure;
+                shift;;
             -h | --help )
                 usage
                 shift ;;
@@ -48,9 +103,6 @@ test-foswiki() {
     WATCH_PATH=`pwd`
     FILE_WATCHES=`find $WATCH_PATH -name '*.pm' -o -name '*.pl' -o -name '*.po'`
 
-    sigint_handler() {
-        exit
-    }
 
     current_time() {
         echo $(($(date +%s%N)/1000000))
@@ -163,8 +215,6 @@ test-foswiki() {
 
 
     }
-
-    trap sigint_handler SIGINT
 
     if $IS_DOCKER_IMAGE_PULLED; then
         docker pull $DOCKER_IMAGE
