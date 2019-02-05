@@ -34,7 +34,6 @@ use utf8;
 use Test::Spec;
 use Jasmine::Spy;
 
-
 sub getSpecs {
     my (\$pattern) = @_;
 
@@ -99,9 +98,6 @@ EOL
                 break ;;
         esac
     done
-
-    WATCH_PATH=`pwd`
-    FILE_WATCHES=`find $WATCH_PATH -name '*.pm' -o -name '*.pl' -o -name '*.po'`
 
 
     current_time() {
@@ -220,11 +216,13 @@ EOL
         docker pull $DOCKER_IMAGE
     fi
 
+    WATCH_PATH=`pwd`
+
     if $IS_WATCHED; then
         while true; do
             run_tests
-            FILE_WATCHES=`find $WATCH_PATH -name '*.pm' -o -name '*.pl' -o -name '*.po'`
-            inotifywait -e CLOSE_WRITE $FILE_WATCHES
+            find $WATCH_PATH -name '*.pm' -o -name '*.pl' -o -name '*.po' > /tmp/watch-test-foswiki
+            inotifywait -e CLOSE_WRITE --fromfile /tmp/watch-test-foswiki
         done
     else
         run_tests
