@@ -217,12 +217,13 @@ EOL
     fi
 
     WATCH_PATH=`pwd`
+    TEMP_FILE=`mktemp --suffix -qwiki-watcher`
 
     if $IS_WATCHED; then
         while true; do
             run_tests
-            find $WATCH_PATH -name '*.pm' -o -name '*.pl' -o -name '*.po' > /tmp/watch-test-foswiki
-            inotifywait -e CLOSE_WRITE --fromfile /tmp/watch-test-foswiki
+            find $WATCH_PATH -name '*.pm' -o -name '*.pl' -o -name '*.po' > $TEMP_FILE
+            inotifywait -e CLOSE_WRITE --fromfile $TEMP_FILE
         done
     else
         run_tests
