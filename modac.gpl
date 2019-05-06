@@ -1,0 +1,17 @@
+GIMP Palette
+Name: Modac Styleguide
+#
+ 87 201 232 Primary(#57C9E8)
+  0 105 191 Colored-Text(#0069BF)
+  0  55 100 Secondary(#003764)
+157 201  88 Success(#9DC958)
+230 186  48 Warning(#E6BA30)
+216  50  21 Failure(#D83215)
+ 57  80  85 Darker-Grey(#395055)
+106 127 132 Dark-Grey(#6A7F84)
+176 192 196 Grey(#B0C0C4)
+222 228 229 Light-Grey(#DEE4E5)
+233 239 240 Pale-Grey(#E9EFF0)
+239 243 244 Button-Grey(#EFF3F4)
+245 243 239 Sand(#F5F3EF)
+250 250 250 White-Grey(#FAFAFA)

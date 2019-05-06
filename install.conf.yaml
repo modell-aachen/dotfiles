@@ -21,7 +21,8 @@
             "~/.bash_completion": "bash/bash_completion",
             "~/.vim": "vim/vim",
             "~/.vimrc": "vim/vimrc",
-            "~/.buildcontrib": "buildcontrib"
+            "~/.buildcontrib": "buildcontrib",
+            "~/.config/inkscape/palettes/modac.gpl": "modac.gpl"
         }
     },
     {
