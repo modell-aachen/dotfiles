@@ -1,33 +1,25 @@
-[
-    {
-        "defaults": {
-            "link": {
-                "relink": true,
-                "force": true
-            }
-        }
-    },
-    {
-        "clean": ["~"]
-    },
-    {
-        "link": {
-            "~/.dotfiles": "",
-            "~/.inputrc": "bash/inputrc",
-            "~/.profile": "bash/profile",
-            "~/.bash": "bash/bash",
-            "~/.bashrc": "bash/bashrc",
-            "~/.bash_aliases": "bash/bash_aliases",
-            "~/.bash_completion": "bash/bash_completion",
-            "~/.vim": "vim/vim",
-            "~/.vimrc": "vim/vimrc",
-            "~/.buildcontrib": "buildcontrib",
-            "~/.config/inkscape/palettes/modac.gpl": "modac.gpl"
-        }
-    },
-    {
-        "shell": [
-            ["git submodule update --init --recursive", "Installing submodules"]
-        ]
-    }
-]
+---
+- defaults:
+    link:
+      relink: true
+      force: true
+
+- clean: ["~"]
+
+- link:
+    "~/.dotfiles": ''
+    "~/.inputrc": bash/inputrc
+    "~/.profile": bash/profile
+    "~/.bash": bash/bash
+    "~/.bashrc": bash/bashrc
+    "~/.bash_aliases": bash/bash_aliases
+    "~/.bash_completion": bash/bash_completion
+    "~/.vim": vim/vim
+    "~/.vimrc": vim/vimrc
+    "~/.buildcontrib": buildcontrib
+    "~/.config/inkscape/palettes/modac.gpl":
+      create: true
+      path: modac.gpl
+
+- shell:
+  - [git submodule update --init --recursive, Installing submodules]
