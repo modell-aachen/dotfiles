@@ -3,17 +3,18 @@ test-foswiki() {
     IS_DOCKER_IMAGE_PULLED=true
     CLEAR="clear"
     IS_WATCHED=false
+    DOCKER_IMAGE="quay.io/modellaachen/perl-test:latest"
 
     usage() {
         printf -v text "%s" \
             "test-fosiki [OPTION...]\n" \
             "    -c, --no-clear     does not clear shell before tests are run\n" \
+            "    -i, --image        use a different docker image\n" \
             "    -p, --no-pull      does not pull docker image\n" \
             "    -v, --verbose      shows failed tests only\n" \
             "    -w, --watch        watches backend tests\n" \
             "        --create       creates a new folder and testrunner in \$repo\n"
         printf "$text"
-        exit
     }
 
     create_infrastructure() {
@@ -33,6 +34,7 @@ use Cwd qw( getcwd abs_path );
 use utf8;
 use Test::Spec;
 use Jasmine::Spy;
+
 
 sub getSpecs {
     my (\$pattern) = @_;
@@ -66,7 +68,7 @@ EOL
         exit
     }
 
-    OPTS=`getopt -o cpvwh --long no-clear,no-pull,verbose,watch,create,help -- "$@"`
+    OPTS=`getopt -o ci:pvwh --long no-clear,image:,no-pull,verbose,watch,create,help -- "$@"`
     if [ $? != 0 ] ; then echo "Failed parsing options." >&2 ; exit 1 ; fi
 
     eval set -- "$OPTS"
@@ -76,6 +78,9 @@ EOL
             -c | --no-clear )
                 CLEAR=""
                 shift ;;
+            -i | --image )
+                DOCKER_IMAGE=$2
+                shift 2 ;;
             -p | --no-pull )
                 IS_DOCKER_IMAGE_PULLED=false
                 shift ;;
@@ -90,6 +95,7 @@ EOL
                 shift;;
             -h | --help )
                 usage
+                return
                 shift ;;
             -- )
                 shift
@@ -98,6 +104,9 @@ EOL
                 break ;;
         esac
     done
+
+    WATCH_PATH=`pwd`
+    FILE_WATCHES=`find $WATCH_PATH -name '*.pm' -o -name '*.pl' -o -name '*.po'`
 
 
     current_time() {
@@ -199,8 +208,6 @@ EOL
         printf "\e[2;37mRan all tests.\e[0m\n\n"
     }
 
-    DOCKER_IMAGE="quay.io/modellaachen/perl-test:latest"
-
     run_tests() {
         $CLEAR
         docker run -it --rm \
@@ -216,14 +223,11 @@ EOL
         docker pull $DOCKER_IMAGE
     fi
 
-    WATCH_PATH=`pwd`
-    TEMP_FILE=`mktemp --suffix -qwiki-watcher`
-
     if $IS_WATCHED; then
         while true; do
             run_tests
-            find $WATCH_PATH -name '*.pm' -o -name '*.pl' -o -name '*.po' > $TEMP_FILE
-            inotifywait -e CLOSE_WRITE --fromfile $TEMP_FILE
+            FILE_WATCHES=`find $WATCH_PATH -name '*.pm' -o -name '*.pl' -o -name '*.po'`
+            inotifywait -e CLOSE_WRITE $FILE_WATCHES
         done
     else
         run_tests
