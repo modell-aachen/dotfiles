@@ -31,7 +31,8 @@ fi
 alias repo='cd /opt/repos'
 
 alias wiki='cd /var/www/qwikis/qwiki'
+alias wikitools='cd /var/www/qwikis/qwiki/tools'
 alias psi='c_d=$PWD;wiki; ./pseudo-install.pl -e "${c_d##*/}"; cd $c_d;'
 alias psiu='c_d=$PWD;wiki; ./pseudo-install.pl -u "${c_d##*/}"; cd $c_d;'
-alias flog='tail -f /var/www/qwikis/qwiki/working/logs/error.log'
+alias flog='c_d=$PWD;wikitools; sudo -u www-data RABBIT_USER=rabbitmq RABBIT_PASSWORD=rabbitmq ./logtail; cd $c_d;'
 alias alog='sudo tail -f /var/log/apache2/error.log'
