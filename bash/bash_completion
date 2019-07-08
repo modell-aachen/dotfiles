@@ -40,9 +40,9 @@ _pseudo-install2()
     local cur prev places paths
     COMPREPLY=()
     cur="${COMP_WORDS[COMP_CWORD]}"
-    places=($(perl -e 'my $x = do "$ENV{HOME}/.buildcontrib"; print join(" ", @{$x->{"pseudo-install"}{extensions_path}});'))
+    places=$(perl -e 'my $x = do "$ENV{HOME}/.buildcontrib"; print join(" ", @{$x->{"pseudo-install"}{extensions_path}});')
     for i in ${places}; do
-        paths=$(${paths} find ${i} -mindepth 1 -maxdepth 1  -type d -printf %f\\n);
+        paths="${paths}$(find ${i} -maxdepth 1 -mindepth 1 -type d \( -name '*Plugin' -o -name '*Contrib' -o -name '*Skin' \) -printf %f\\n)";
     done
     COMPREPLY=( $(compgen -W "${paths}" -- ${cur}) )
     return 0
