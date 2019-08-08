@@ -23,4 +23,4 @@
 
 - shell:
   - [git submodule update --init --recursive, Installing submodules]
-  - [sed s/FOSWIKI_ROOT=\"\"/FOSWIKI_ROOT=\"$FOSWIKI_ROOT\"/g bash/bashrc > bash/bashrc, Set Custom FOSWIKI_ROOT]
+  - sed -i s@FOSWIKI_ROOT=\"\"@FOSWIKI_ROOT=\"$FOSWIKI_ROOT\"@g bash/bashrc
