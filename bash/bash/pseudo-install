@@ -1,6 +1,6 @@
 pseudo-install() {
     c_d=$PWD;
-    cd /var/www/qwikis/qwiki;
+    cd $FOSWIKI_ROOT;
     for repo in "$@"
     do
         sudo "HOME=$HOME" -u www-data ./pseudo-install.pl -u "$repo";
