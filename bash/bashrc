@@ -61,6 +61,11 @@ unset color_prompt force_color_prompt
 # Don't check mail when opening terminal
 unset MAILCHECK
 
+export FOSWIKI_ROOT="/var/www/qwikis/qwiki"
+export PERL5LIB="$FOSWIKI_ROOT/lib"
+export PERLLIB="$PERL5LIB"
+export FOSWIKI_LIBS="$PERL5LIB"
+
 # Alias definitions.
 # You may want to put all your additions into a separate file like
 # ~/.bash_aliases, instead of adding them here directly.
@@ -90,9 +95,5 @@ for f in $(find ~/.bash/ -maxdepth 1 -type f); do
     source $f
 done
 export PS1="\${debian_chroot:+(\$debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\] \[$txtcyn\]\$git_branch\[$txtred\]\$git_dirty\[$txtrst\]\$ "
-export FOSWIKI_ROOT=""
-export PERL5LIB="${FOSWIKI_ROOT:-/var/www/qwikis/qwiki}/lib"
-export PERLLIB="$PERL5LIB"
-export FOSWIKI_LIBS="$PERL5LIB"
 #Fix ls color for folder: (OTHER_WRITABLE) Directory that is other-writable (o+w) and not sticky
 export LS_COLORS=$LS_COLORS'ow=1;33'
