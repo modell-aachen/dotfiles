@@ -1,0 +1,60 @@
+wiki() {
+
+    usage() {
+        printf -v text "%s" \
+            "wiki [OPTION...]\n" \
+            "    -h, --help         shows this help message\n"
+        printf "$text"
+    }
+
+    CD_DIR=$FOSWIKI_ROOT
+
+    OPTS=`getopt -o h --long help -- "$@"`
+    if [ $? != 0 ] ; then echo "Failed parsing options." >&2 ; exit 1 ; fi
+
+    eval set -- "$OPTS"
+
+    while true; do
+        case "$1" in
+            -h | --help )
+                usage
+                return
+                shift ;;
+            -- )
+                shift
+                break ;;
+            * )
+                break ;;
+        esac
+    done
+
+    shift $(expr $OPTIND - 1 )
+
+    DIR=$1
+
+    if [ "$DIR" == "tools" ]; then
+        CD_DIR=$FOSWIKI_ROOT/tools
+    elif [ ! -z "$DIR" ]; then
+        CD_DIR=$FOSWIKI_ROOT/../vhosts/$DIR
+    fi
+
+    cd $CD_DIR
+}
+
+
+_wiki-completion()
+{
+    local CUR VHOST_DIR DIRS
+    COMPREPLY=()
+    CUR="${COMP_WORDS[COMP_CWORD]}"
+
+    VHOST_DIR=$FOSWIKI_ROOT/../vhosts
+    DIRS="tools "
+
+    DIRS="$DIRS$(find $VHOST_DIR -maxdepth 1 -mindepth 1 -type d \( -name '*.riga' \) -printf '%f')"
+    COMPREPLY=( $(compgen -W "$DIRS" -- ${CUR}) )
+    return 0
+}
+
+
+complete -F _wiki-completion wiki

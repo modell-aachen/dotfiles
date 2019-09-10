@@ -30,10 +30,7 @@ fi
 #Wiki
 alias repo="cd /opt/repos"
 
-alias wiki="cd $FOSWIKI_ROOT"
-alias wikitools="cd $FOSWIKI_ROOT/tools"
 alias psi="c_d=$PWD;wiki; ./pseudo-install.pl -e "${c_d##*/}"; cd $c_d;"
 alias psiu="c_d=$PWD;wiki; ./pseudo-install.pl -u "${c_d##*/}"; cd $c_d;"
-alias flog="c_d=$PWD;wikitools; sudo -u www-data RABBIT_USER=rabbitmq RABBIT_PASSWORD=rabbitmq ./logtail; cd $c_d;"
-alias fdump="c_d=$PWD;wikitools; sudo -u www-data POSTGRES_SOCKET=/run/postgresql/ ./logdump; cd $c_d;"
+alias qdump="c_d=$PWD;wiki tools; sudo -u www-data POSTGRES_SOCKET=/run/postgresql/ ./logdump; cd $c_d;"
 alias alog="sudo tail -f /var/log/apache2/error.log"
