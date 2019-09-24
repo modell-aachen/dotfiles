@@ -49,3 +49,6 @@ _pseudo-install2()
 }
 complete -F _pseudo-install2 pseudo-install
 
+if [ -f /usr/bin/qwiki ] ; then
+    eval "`qwiki completion`"
+fi
