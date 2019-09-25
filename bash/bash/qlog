@@ -27,7 +27,7 @@ qlog() {
         esac
     done
 
-    VHOST_PATH=$(realpath -s $FOSWIKI_ROOT/..)/vhosts
+    VHOST_PATH=$(realpath -s $FOSWIKI_ROOT/..)/tenants
     LOG_PATTERN=working/logs/*.log
 
     echo $VHOST_PATH

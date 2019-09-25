@@ -35,7 +35,7 @@ wiki() {
     if [ "$DIR" == "tools" ]; then
         CD_DIR=$FOSWIKI_ROOT/tools
     elif [ ! -z "$DIR" ]; then
-        CD_DIR=$FOSWIKI_ROOT/../vhosts/$DIR
+        CD_DIR=$FOSWIKI_ROOT/../tenants/$DIR
     fi
 
     cd $CD_DIR
@@ -48,7 +48,7 @@ _wiki-completion()
     COMPREPLY=()
     CUR="${COMP_WORDS[COMP_CWORD]}"
 
-    VHOST_DIR=$FOSWIKI_ROOT/../vhosts
+    VHOST_DIR=$FOSWIKI_ROOT/../tenants
     DIRS="tools "
 
     DIRS="$DIRS$(find $VHOST_DIR -maxdepth 1 -mindepth 1 -type d \( -name '*.riga' \) -printf '%f')"
