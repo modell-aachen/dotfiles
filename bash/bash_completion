@@ -49,6 +49,9 @@ _pseudo-install2()
 }
 complete -F _pseudo-install2 pseudo-install
 
-if [ -f /usr/bin/qwiki ] ; then
-    eval "`qwiki completion`"
+if [ -f /usr/bin/qwiki ] && [ ! -f "$HOME/.qwiki_completion" ] ; then
+    qwiki config init > /dev/null
+    qwiki completion > $HOME/.qwiki_completion
 fi
+
+[ -f /usr/bin/qwiki ] && source $HOME/.qwiki_completion
