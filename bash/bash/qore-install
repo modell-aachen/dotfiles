@@ -1,0 +1,63 @@
+qore-install()
+{
+    qore-link() {
+        file=$1
+        dest=${file/$repopath/$FOSWIKI_ROOT}
+
+        if [ -L $dest ]; then
+            return 1
+        fi
+
+        if [ ! -f $dest  ]; then
+            echo $dest
+            sudo -u www-data mkdir -p $(dirname $dest)
+            sudo -u www-data cp -r $fullpath $dest
+        fi
+        sudo -u www-data ln -sf $fullpath $dest
+    }
+
+    for option in "$@"
+    do
+        case $option in
+            frontend)
+                path=pub/System/js
+                ;;
+            *)
+                path=$option
+                ;;
+        esac
+        repopath=/opt/repos/FoswikiContrib/core
+        fullpath=$repopath/$path
+        if [[ -d $fullpath ]]; then
+            for src in $(find $fullpath -type f); do
+                qore-link $src
+            done
+        elif [[ -f $fullpath ]]; then
+            qore-link $fullpath
+        fi
+    done
+    sudo systemctl restart qwikiRestart
+    echo "Success!"
+}
+
+_qore-install-completion()
+{
+    COMPREPLY=()
+    cur="${COMP_WORDS[COMP_CWORD]}"
+
+    dirs=(tools templates lib locale)
+
+    OPTIONS="frontend"
+    for dir in tools templates lib locale; do
+        repopath=/opt/repos/FoswikiContrib/core
+        for file in $(find $repopath/$dir -type f); do
+            OPTIONS="$OPTIONS ${file//$repopath\//}"
+        done
+    done
+
+    COMPREPLY=( $(compgen -W "$OPTIONS" -- ${cur}) )
+    return 0
+}
+
+
+complete -F _qore-install-completion qore-install
