@@ -44,7 +44,7 @@ _pseudo-install2()
     for i in ${places}; do
         paths="${paths}$(find ${i} -maxdepth 1 -mindepth 1 -type d \( -name '*Plugin' -o -name '*Contrib' -o -name '*Skin' \) -printf %f\\n)";
     done
-    COMPREPLY=( $(compgen -W "${paths}" -- ${cur}) )
+    COMPREPLY=( $(compgen -W "${paths} core" -- ${cur}) )
     return 0
 }
 complete -F _pseudo-install2 pseudo-install

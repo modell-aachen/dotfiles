@@ -1,11 +1,14 @@
+manifest-files() {
+    echo $(grep "^[^#]" $CORE_REPO/lib/Foswiki/Contrib/core/MANIFEST | cut -d ' ' -f1 | tr '\n' ' ')
+}
+
 qore-install() {
     local user=www-data
-    local repopath=/opt/repos/FoswikiContrib/core
 
     qore-link() {
         local file=$1
         local fullpath=$2
-        local dest=${file/$repopath/$FOSWIKI_ROOT}
+        local dest=${file/$CORE_REPO/$FOSWIKI_ROOT}
 
         if [ -L "$dest" ]; then
             return
@@ -18,7 +21,13 @@ qore-install() {
         sudo -u $user ln -sf "$file" "$dest"
     }
 
-    for option in "$@"; do
+    local options="$@"
+    if [[ -z ${options} ]]; then
+        options="$(manifest-files)"
+    fi
+
+    for option in $options; do
+        echo $option
         local path
         case $option in
             frontend)
@@ -28,7 +37,7 @@ qore-install() {
                 path=$option
                 ;;
         esac
-        local fullpath=$repopath/$path
+        local fullpath=$CORE_REPO/$path
         if [ -d "$fullpath" ]; then
             for src in $(find $fullpath -type f); do
                 qore-link $src $fullpath
@@ -43,18 +52,11 @@ qore-install() {
 
 _qore-install-completion() {
     local cur
+
     COMPREPLY=()
     cur="${COMP_WORDS[COMP_CWORD]}"
 
-    local options="frontend"
-    for dir in tools templates lib locale; do
-        local repopath=/opt/repos/FoswikiContrib/core
-        for file in $(find $repopath/$dir -type f); do
-            options+=" ${file/$repopath\//}"
-        done
-    done
-
-    COMPREPLY=( $(compgen -W "$options" -- ${cur}) )
+    COMPREPLY=( $(compgen -W "frontend $(manifest-files)" -- ${cur}) )
     return 0
 }
 

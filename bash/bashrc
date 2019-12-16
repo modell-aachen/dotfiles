@@ -65,6 +65,7 @@ export FOSWIKI_ROOT="/var/www/qwikis/qwiki"
 export PERL5LIB="$FOSWIKI_ROOT/lib"
 export PERLLIB="$PERL5LIB"
 export FOSWIKI_LIBS="$PERL5LIB"
+export CORE_REPO="/opt/repos/FoswikiContrib/core"
 
 # Alias definitions.
 # You may want to put all your additions into a separate file like
