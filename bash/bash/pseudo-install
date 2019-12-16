@@ -1,10 +1,16 @@
 pseudo-install() {
     c_d=$PWD;
     cd $FOSWIKI_ROOT;
-    for repo in "$@"
-    do
-        sudo "HOME=$HOME" -u www-data ./pseudo-install.pl -u "$repo";
-        sudo "HOME=$HOME" -u www-data ./pseudo-install.pl -e "$repo";
+    for repo in "$@"; do
+        case $repo in
+            core)
+                qore-install
+                ;;
+            *)
+                sudo "HOME=$HOME" -u www-data ./pseudo-install.pl -u "$repo";
+                sudo "HOME=$HOME" -u www-data ./pseudo-install.pl -e "$repo";
+                ;;
+        esac
     done
     cd $c_d;
     sudo systemctl restart qwikiRestart;
