@@ -21,12 +21,13 @@ qore-install() {
         sudo -u $user ln -sf "$file" "$dest"
     }
 
-    local options=("$@")
-    if [ -z "$@" ]; then
-        options=("$(manifest-files)")
+    local options="$@"
+    if [[ -z ${options} ]]; then
+        options="$(manifest-files)"
     fi
 
-    for option in "${options[@]}"; do
+    for option in $options; do
+        echo $option
         local path
         case $option in
             frontend)
