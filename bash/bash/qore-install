@@ -25,7 +25,6 @@ qore-install() {
     fi
 
     for option in "${options[@]}"; do
-        echo $option
         local path
         case $option in
             frontend)
