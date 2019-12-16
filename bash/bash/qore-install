@@ -1,3 +1,7 @@
+manifest-files() {
+    echo $(grep "^[^#]" $CORE_REPO/lib/Foswiki/Contrib/core/MANIFEST | cut -d ' ' -f1 | tr '\n' ' ')
+}
+
 qore-install() {
     local user=www-data
 
@@ -19,7 +23,7 @@ qore-install() {
 
     local options
     if [ -z "$@" ]; then
-        options=(frontend tools templates lib locale)
+        options=("$(manifest-files)")
     else
         options=("$@")
     fi
@@ -53,14 +57,7 @@ _qore-install-completion() {
     COMPREPLY=()
     cur="${COMP_WORDS[COMP_CWORD]}"
 
-    local options="frontend"
-    for dir in tools templates lib locale; do
-        for file in $(find $CORE_REPO/$dir -type f); do
-            options+=" ${file/$CORE_REPO\//}"
-        done
-    done
-
-    COMPREPLY=( $(compgen -W "$options" -- ${cur}) )
+    COMPREPLY=( $(compgen -W "frontend $(manifest-files)" -- ${cur}) )
     return 0
 }
 
