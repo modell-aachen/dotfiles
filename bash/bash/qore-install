@@ -1,23 +1,25 @@
-qore-install()
-{
+qore-install() {
+    local user=www-data
+    local repopath=/opt/repos/FoswikiContrib/core
+
     qore-link() {
-        file=$1
-        dest=${file/$repopath/$FOSWIKI_ROOT}
+        local file=$1
+        local fullpath=$2
+        local dest=${file/$repopath/$FOSWIKI_ROOT}
 
-        if [ -L $dest ]; then
-            return 1
+        if [ -L "$dest" ]; then
+            return
         fi
 
-        if [ ! -f $dest  ]; then
-            echo $dest
-            sudo -u www-data mkdir -p $(dirname $dest)
-            sudo -u www-data cp -r $fullpath $dest
+        if [ ! -f "$dest"  ]; then
+            sudo -u $user mkdir -p $(dirname "$dest")
+            sudo -u $user cp -r "$file" "$dest"
         fi
-        sudo -u www-data ln -sf $fullpath $dest
+        sudo -u $user ln -sf "$file" "$dest"
     }
 
-    for option in "$@"
-    do
+    for option in "$@"; do
+        local path
         case $option in
             frontend)
                 path=pub/System/js
@@ -26,36 +28,33 @@ qore-install()
                 path=$option
                 ;;
         esac
-        repopath=/opt/repos/FoswikiContrib/core
-        fullpath=$repopath/$path
-        if [[ -d $fullpath ]]; then
+        local fullpath=$repopath/$path
+        if [ -d "$fullpath" ]; then
             for src in $(find $fullpath -type f); do
-                qore-link $src
+                qore-link $src $fullpath
             done
-        elif [[ -f $fullpath ]]; then
-            qore-link $fullpath
+        elif [ -f "$fullpath" ]; then
+            qore-link $fullpath $fullpath
         fi
     done
     sudo systemctl restart qwikiRestart
     echo "Success!"
 }
 
-_qore-install-completion()
-{
+_qore-install-completion() {
+    local cur
     COMPREPLY=()
     cur="${COMP_WORDS[COMP_CWORD]}"
 
-    dirs=(tools templates lib locale)
-
-    OPTIONS="frontend"
+    local options="frontend"
     for dir in tools templates lib locale; do
-        repopath=/opt/repos/FoswikiContrib/core
+        local repopath=/opt/repos/FoswikiContrib/core
         for file in $(find $repopath/$dir -type f); do
-            OPTIONS="$OPTIONS ${file//$repopath\//}"
+            options+=" ${file/$repopath\//}"
         done
     done
 
-    COMPREPLY=( $(compgen -W "$OPTIONS" -- ${cur}) )
+    COMPREPLY=( $(compgen -W "$options" -- ${cur}) )
     return 0
 }
 
