@@ -1,6 +1,6 @@
 {
     'file' => '~/.buildcontrib',
     'pseudo-install' => {
-        'extensions_path' => ['/opt/repos/FoswikiContrib', '/opt/repos']
+        'extensions_path' => ['/opt/repos/QwikiContrib', '/opt/repos']
     }
 };
