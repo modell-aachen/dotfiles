@@ -8,19 +8,20 @@ qore-install() {
     }
 
     qore-link() {
-        local file=$1
-        local fullpath=$2
-        local dest=${file/$CORE_REPO/$FOSWIKI_ROOT}
+        local file="$1"
+        local src="$CORE_REPO/$file"
+        local dest="$FOSWIKI_ROOT/$file"
 
         if [ -L "$dest" ]; then
             return
         fi
 
+        echo "$file"
         if [ ! -f "$dest"  ]; then
             sudo -u $user mkdir -p $(dirname "$dest")
-            sudo -u $user cp -r "$file" "$dest"
+            sudo -u $user cp -r "$src" "$dest"
         fi
-        sudo -u $user ln -sf "$file" "$dest"
+        sudo -u $user ln -sf "$src" "$dest"
     }
 
     qore-link-frontend() {
@@ -31,15 +32,14 @@ qore-install() {
         sudo -u $user ln -s "$file" "$dest"
     }
 
+    find -L $CORE_REPO -type l -delete
     qore-link-frontend
 
     local files="$(qwiki-files)"
     OIFS="$IFS"
     IFS=$'\n'
     for file in $files; do
-        echo "$file"
-        local fullpath="$CORE_REPO/$file"
-        qore-link "$fullpath" "$fullpath"
+        qore-link "$file"
     done
     IFS="$OIFS"
 
