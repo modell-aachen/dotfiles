@@ -2,9 +2,11 @@ qore-install() {
     local user=www-data
 
     qwiki-files() {
-    find $CORE_REPO/{bin,cron,data,lib,LICENSE,locale,pub,README.md,resources,robots.txt,solr,templates,tools,WebService-Solr.patch,working} \
-        -type f ! -path "$CORE_REPO/pub/System/js/*" \
-        | sed "s#^$CORE_REPO##"
+    find $CORE_REPO/{lib,LICENSE,locale,README.md,robots.txt} \
+        -type f \
+        ! -path "$CORE_REPO/lib/Qwiki/*" \
+        ! -path "$CORE_REPO/lib/Foswiki/*" \
+        | sed "s#^$CORE_REPO/##"
     }
 
     qore-link() {
@@ -24,16 +26,22 @@ qore-install() {
         sudo -u $user ln -sf "$src" "$dest"
     }
 
-    qore-link-frontend() {
-        local file="$CORE_REPO/pub/System/js"
-        local dest="$FOSWIKI_ROOT/pub/System/js"
+    qore-link-dirs() {
+        local dirs=(bin cron data "lib/Foswiki" "lib/Qwiki" pub resources solr templates tools)
 
-        sudo rm -r "$dest"
-        sudo -u $user ln -s "$file" "$dest"
+        for dir in ${dirs[@]}; do
+            local src="$CORE_REPO/$dir"
+            local dest="$FOSWIKI_ROOT/$dir"
+
+            echo "$dest"
+
+            sudo rm -r "$dest"
+            sudo -u $user ln -s "$src" "$dest"
+        done
     }
 
-    find -L $CORE_REPO -type l -delete
-    qore-link-frontend
+    sudo find -L $FOSWIKI_ROOT -type l -delete
+    qore-link-dirs
 
     local files="$(qwiki-files)"
     OIFS="$IFS"
