@@ -2,10 +2,8 @@ qore-install() {
     local user=www-data
 
     qwiki-files() {
-    find $CORE_REPO/{lib,LICENSE,locale,README.md,robots.txt} \
+    find $CORE_REPO/{lib,LICENSE,locale,README.md,robots.txt,tools,bin} \
         -type f \
-        ! -path "$CORE_REPO/lib/Qwiki/*" \
-        ! -path "$CORE_REPO/lib/Foswiki/*" \
         | sed "s#^$CORE_REPO/##"
     }
 
@@ -27,7 +25,7 @@ qore-install() {
     }
 
     qore-link-dirs() {
-        local dirs=(bin cron data "lib/Foswiki" "lib/Qwiki" pub resources solr templates tools)
+        local dirs=(cron data pub resources solr templates)
 
         for dir in ${dirs[@]}; do
             local src="$CORE_REPO/$dir"
