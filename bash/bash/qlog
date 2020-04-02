@@ -31,7 +31,7 @@ qlog() {
     LOG_PATTERN=working/logs/*.log
 
     echo $VHOST_PATH
-    LOG_PATHS=`find $VHOST_PATH -maxdepth 1 -mindepth 1 -type d \( -name '*.riga' -o -name '*.qwiki' \) -printf "%p/$LOG_PATTERN "`
+    LOG_PATHS=`find $VHOST_PATH -maxdepth 1 -mindepth 1 -type d \( -name '*.riga' -o -name '*.qwiki' -o '*-*' \) -printf "%p/$LOG_PATTERN "`
 
     echo "$LOG_PATHS"
 

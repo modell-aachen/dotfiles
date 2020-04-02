@@ -30,7 +30,4 @@ fi
 #Wiki
 alias repo="cd /opt/repos"
 
-alias psi="c_d=$PWD;wiki; ./pseudo-install.pl -e "${c_d##*/}"; cd $c_d;"
-alias psiu="c_d=$PWD;wiki; ./pseudo-install.pl -u "${c_d##*/}"; cd $c_d;"
-alias qdump="c_d=$PWD;wiki tools; sudo -u www-data POSTGRES_SOCKET=/run/postgresql/ ./logdump; cd $c_d;"
-alias alog="sudo tail -f /var/log/apache2/error.log"
+alias alog="sudo tail -f /var/log/apache2/error.log /var/log/httpd/error_log"
