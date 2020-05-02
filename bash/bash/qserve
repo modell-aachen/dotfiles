@@ -1,0 +1,79 @@
+qserve() {
+    usage() {
+        cat << USAGE
+Usage:
+  qserve [subcommand]
+
+subcommands
+  run        this is the default subcommand and starts a vue-cli-service serve
+  uninstall  removes configuration
+
+Flags:
+  -h, --help    shows this help message
+USAGE
+    }
+
+    httpdService() {
+        local httpdService=apache2
+        [ -d /etc/httpd ] && httpdService=httpd
+        echo "$httpdService"
+    }
+
+    run() {
+        sudo cp "/etc/$(httpdService)/_qwiki.dev.conf" \
+            "/etc/$(httpdService)/qwiki.dev.conf"
+        sudo systemctl restart $(httpdService)
+        cd /opt/repos2/QwikiContrib/core
+        npx vue-cli-service serve
+    }
+
+    uninstall() {
+        sudo rm "/etc/$(httpdService)/qwiki.dev.conf"
+        sudo systemctl restart $(httpdService)
+    }
+
+
+    OPTS=`getopt -o h --long help -- "$@"`
+    if [ $? != 0 ] ; then echo "Failed parsing options." >&2 ; exit 1 ; fi
+
+    eval set -- "$OPTS"
+
+    while true; do
+        case "$1" in
+            -h | --help )
+                usage
+                return
+                shift ;;
+            -- )
+                shift
+                break ;;
+            * )
+                break ;;
+        esac
+    done
+
+    shift $(expr $OPTIND - 1 )
+
+    local subcommand=${1:=run}
+
+    case "$subcommand" in
+        run )
+            run
+            ;;
+        uninstall )
+            uninstall
+            ;;
+        * )
+            echo "subcommand '$subcommand' not found!"
+            ;;
+    esac
+}
+
+_qserve-completion()
+{
+    local cur="${COMP_WORDS[COMP_CWORD]}"
+    COMPREPLY=( $(compgen -W "run uninstall -h" -- $cur) )
+}
+
+
+complete -F _qserve-completion qserve
