@@ -22,6 +22,10 @@ USAGE
     run() {
         sudo cp "/etc/$(httpdService)/_qwiki.dev.conf" \
             "/etc/$(httpdService)/qwiki.dev.conf"
+        if [ $(httpdService) == "apache2" ] ; then
+            sudo a2enmod proxy
+            sudo a2enmod proxy_http
+        fi
         sudo systemctl restart $(httpdService)
         cd /opt/repos2/QwikiContrib/core
         npx vue-cli-service serve
@@ -54,7 +58,7 @@ USAGE
 
     shift $(expr $OPTIND - 1 )
 
-    local subcommand=${1:=run}
+    local subcommand=${1:-run}
 
     case "$subcommand" in
         run )
