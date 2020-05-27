@@ -31,3 +31,6 @@ fi
 alias repo="cd /opt/repos"
 
 alias alog="sudo tail -f /var/log/apache2/error.log /var/log/httpd/error_log"
+
+alias catalog="echo '$FOSWIKI_ROOT/lib/Foswiki/Plugins/WorkflowAppPlugin/Assets/appConfigs/'"
+alias e2econf="echo '/opt/repos/QwikiContrib/e2e-tests/cypress/fixtures/Export_Investmentrequest.json'"
