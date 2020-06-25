@@ -1,0 +1,117 @@
+qprofile() {
+    usage() {
+        cat << USAGE
+Usage:
+  qprofile [subcommand]
+
+subcommands
+  enable   enables profiling in systemd service
+  disable  disables profiling
+  start    starts profiling
+  stop     stops profiling
+  compile  converts profiling files into an html file
+
+Flags:
+  -h, --help  shows this help message
+USAGE
+    }
+
+    httpdUser() {
+        local httpdUser=www-data
+        [ -d /etc/httpd ] && httpdUser=httpd
+        echo "$httpdUser"
+    }
+
+    qwiki_start() {
+        sudo systemctl start foswiki-fastcgi
+    }
+
+    qwiki_stop() {
+        sudo systemctl stop foswiki-fastcgi
+    }
+
+    qwiki_reload() {
+        qwiki_stop
+        sudo systemctl daemon-reload
+    }
+
+    enable() {
+        sudo sed -i -e 's#^ExecStart=/usr/bin/perl \$#ExecStart=/usr/bin/perl -d:NYTProf $#' /etc/systemd/system/foswiki-fastcgi.service
+        sudo sed -i -e 's#^WorkingDirectory=/var/www$#WorkingDirectory=/var/www/qwikis/core/bin#' /etc/systemd/system/foswiki-fastcgi.service
+        sudo sed -i -e 's#^FOSWIKI_CHILDREN=.*$#FOSWIKI_CHILDREN=1#' /etc/default/foswiki-fastcgi
+        qwiki_reload
+    }
+
+    disable() {
+        sudo sed -i -e 's#^ExecStart=/usr/bin/perl -d:NYTProf#ExecStart=/usr/bin/perl#' /etc/systemd/system/foswiki-fastcgi.service
+        sudo sed -i -e 's#^FOSWIKI_CHILDREN=1$#FOSWIKI_CHILDREN=6#' /etc/default/foswiki-fastcgi
+        qwiki_reload
+        qwiki_start
+    }
+
+    profile_start() {
+        sudo rm -r /var/www/qwikis/core/bin/nytprof*
+        qwiki_start
+    }
+
+    compile() {
+        cd /var/www/qwikis/core/bin
+        sudo -u www-data nytprofhtml -f /var/www/qwikis/core/bin/nytprof.out -o /opt/repos/nytprof
+        cd -
+    }
+
+
+    OPTS=`getopt -o h --long help -- "$@"`
+    if [ $? != 0 ] ; then echo "Failed parsing options." >&2 ; exit 1 ; fi
+
+    eval set -- "$OPTS"
+
+    while true; do
+        case "$1" in
+            -h | --help )
+                usage
+                return
+                shift ;;
+            -- )
+                shift
+                break ;;
+            * )
+                break ;;
+        esac
+    done
+
+    shift $(expr $OPTIND - 1 )
+
+    local subcommand=${1}
+
+    case "$subcommand" in
+        enable )
+            enable
+            ;;
+        disable )
+            disable
+            ;;
+        start )
+            profile_start
+            ;;
+        stop )
+            qwiki_stop
+            ;;
+        compile )
+            compile
+            ;;
+        * )
+            echo "subcommand '$subcommand' not found!"
+            ;;
+    esac
+}
+
+_qprofile-completion()
+{
+    local cur="${COMP_WORDS[COMP_CWORD]}"
+    COMPREPLY=( $(compgen -W "enable disable start stop compile -h" -- $cur) )
+}
+
+
+complete -F _qprofile-completion qprofile
+
