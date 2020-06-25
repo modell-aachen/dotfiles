@@ -9,7 +9,7 @@ subcommands
   disable  disables profiling
   start    starts profiling
   stop     stops profiling
-  compile  converts profiling files into an html file
+  compile  converts profiling files into the html folder /opt/repos/nytprof
 
 Flags:
   -h, --help  shows this help message
@@ -39,6 +39,9 @@ USAGE
         sudo sed -i -e 's#^ExecStart=/usr/bin/perl \$#ExecStart=/usr/bin/perl -d:NYTProf $#' /etc/systemd/system/foswiki-fastcgi.service
         sudo sed -i -e 's#^WorkingDirectory=/var/www$#WorkingDirectory=/var/www/qwikis/core/bin#' /etc/systemd/system/foswiki-fastcgi.service
         sudo sed -i -e 's#^FOSWIKI_CHILDREN=.*$#FOSWIKI_CHILDREN=1#' /etc/default/foswiki-fastcgi
+        if [ -z "$(grep '^Environment==sigexit=int,hup$' /etc/systemd/system/foswiki-fastcgi.service)" ]; then
+            sudo sed -i '/en_US.utf8$/a Environment==sigexit=int,hup' /etc/systemd/system/foswiki-fastcgi.service
+        fi
         qwiki_reload
     }
 
@@ -56,7 +59,8 @@ USAGE
 
     compile() {
         cd /var/www/qwikis/core/bin
-        sudo -u www-data nytprofhtml -f /var/www/qwikis/core/bin/nytprof.out -o /opt/repos/nytprof
+        sudo -u www-data nytprofmerge --out=nytprof-merged.out nytprof.out.*
+        sudo -u www-data nytprofhtml -f nytprof-merged.out -o /opt/repos/nytprof
         cd -
     }
 
