@@ -61,7 +61,7 @@ unset color_prompt force_color_prompt
 # Don't check mail when opening terminal
 unset MAILCHECK
 
-export FOSWIKI_ROOT="/var/www/qwikis/qwiki"
+export FOSWIKI_ROOT="/var/www/qwikis/core"
 export PERL5LIB="$FOSWIKI_ROOT/lib"
 export PERLLIB="$PERL5LIB"
 export FOSWIKI_LIBS="$PERL5LIB"
