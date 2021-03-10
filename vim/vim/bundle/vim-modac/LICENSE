@@ -152,10 +152,10 @@ endfunction
 
 setlocal indentexpr=WikiIndent()
 
-call WIMAP('if!', "IF{\<CR>\<c-t>\"<+cond+>\"\<CR>then=\"<+then+>\"<++> else=\"<+else+>\"\<CR>\<c-d>}<++>", 'qwiki')
-call WIMAP('search!', "SEARCH{\<CR>\<c-t>\"<++>\"\<CR>type=\"<++>\"\<CR>limit=\"<++>\"\<CR>nonoise=\"<++>\"\<CR>format=\"<++>\"\<CR>\<c-d>}<++>", 'qwiki')
-call WIMAP ("PREF", "%META:PREFERENCE{name=\"<++>\" title=\"<++>\" type=\"<++>\" value=\"<++>\"}%", "qwiki")
-call WIMAP ("NOTE", "Release-Note:<++>\<CR>Ticket: <++>", "qwiki")
+call IMAP('if!', "IF{\<CR>\<c-t>\"<+cond+>\"\<CR>then=\"<+then+>\"<++> else=\"<+else+>\"\<CR>\<c-d>}<++>", 'qwiki')
+call IMAP('search!', "SEARCH{\<CR>\<c-t>\"<++>\"\<CR>type=\"<++>\"\<CR>limit=\"<++>\"\<CR>nonoise=\"<++>\"\<CR>format=\"<++>\"\<CR>\<c-d>}<++>", 'qwiki')
+call IMAP ("PREF", "%META:PREFERENCE{name=\"<++>\" title=\"<++>\" type=\"<++>\" value=\"<++>\"}%", "qwiki")
+call IMAP ("NOTE", "Release-Note:<++>\<CR>Ticket: <++>", "qwiki")
 
 nnoremap <F5> ms:%call WikiExpand(1)<CR>`s
 nnoremap <s-F5> ms:%call WikiExpand(0)<CR>`s
