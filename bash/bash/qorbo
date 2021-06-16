@@ -1,0 +1,11 @@
+qorbo() {
+    echo "Sometimes the application hangs, just press Ctrl+D to continue"
+
+    sudo systemctl stop qwiki.service events.qwiki.service
+
+    cd $FOSWIKI_ROOT/bin
+
+    sudo -u www-data morbo -w /opt/repos/QwikiContrib/core/lib --listen http://localhost:1337 ./qwiki
+
+    cd - > /dev/null
+}
