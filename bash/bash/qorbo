@@ -5,10 +5,9 @@ qorbo() {
 
     cd $FOSWIKI_ROOT/bin
 
-    sudo -u www-data -s \
-        source /etc/default/qwiki && \
-        TENANT_MANAGEMENT_AUTH_TOKEN=$TENANT_MANAGEMENT_AUTH_TOKEN \
-        TENANT_MANAGEMENT_SUPPORTED_DOMAINS=$TENANT_MANAGEMENT_SUPPORTED_DOMAINS \
+    sudo -u www-data \
+        TENANT_MANAGEMENT_AUTH_TOKEN=modell-aachen \
+        TENANT_MANAGEMENT_SUPPORTED_DOMAINS=qwiki \
         morbo -w /opt/repos/QwikiContrib/core/lib --listen http://localhost:1337 ./qwiki
 
     cd - > /dev/null
