@@ -49,6 +49,5 @@ qore-install() {
     done
     IFS="$OIFS"
 
-    sudo systemctl restart qwikiRestart
     echo "Success!"
 }
