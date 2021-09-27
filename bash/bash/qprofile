@@ -7,8 +7,6 @@ Usage:
 subcommands
   enable   enables profiling in systemd service
   disable  disables profiling
-  start    starts profiling
-  stop     stops profiling
   compile  converts profiling files into the html folder /opt/repos/nytprof
 
 Flags:
@@ -16,18 +14,12 @@ Flags:
 USAGE
     }
 
-    httpdUser() {
-        local httpdUser=www-data
-        [ -d /etc/httpd ] && httpdUser=httpd
-        echo "$httpdUser"
-    }
-
     qwiki_start() {
-        sudo systemctl start foswiki-fastcgi
+        sudo systemctl start qwiki.service
     }
 
     qwiki_stop() {
-        sudo systemctl stop foswiki-fastcgi
+        sudo systemctl stop qwiki.service
     }
 
     qwiki_reload() {
@@ -36,31 +28,20 @@ USAGE
     }
 
     enable() {
-        sudo sed -i -e 's#^ExecStart=/usr/bin/perl \$#ExecStart=/usr/bin/perl -d:NYTProf $#' /etc/systemd/system/foswiki-fastcgi.service
-        sudo sed -i -e 's#^WorkingDirectory=/var/www$#WorkingDirectory=/var/www/qwikis/core/bin#' /etc/systemd/system/foswiki-fastcgi.service
-        sudo sed -i -e 's#^FOSWIKI_CHILDREN=.*$#FOSWIKI_CHILDREN=1#' /etc/default/foswiki-fastcgi
-        if [ -z "$(grep '^Environment==sigexit=int,hup$' /etc/systemd/system/foswiki-fastcgi.service)" ]; then
-            sudo sed -i '/en_US.utf8$/a Environment==sigexit=int,hup' /etc/systemd/system/foswiki-fastcgi.service
-        fi
-        qwiki_reload
-    }
-
-    disable() {
-        sudo sed -i -e 's#^ExecStart=/usr/bin/perl -d:NYTProf#ExecStart=/usr/bin/perl#' /etc/systemd/system/foswiki-fastcgi.service
-        sudo sed -i -e 's#^FOSWIKI_CHILDREN=1$#FOSWIKI_CHILDREN=6#' /etc/default/foswiki-fastcgi
+        sudo sed -i -e 's#\$app->configureAsyncDomainEvents(\$app);#\$app->configureAsyncDomainEvents(\$app);\n    \$app->plugin( NYTProf => \$mojoConfig );#' /var/www/qwikis/core/lib/Qwiki/Common/Infrastructure/Api/App.pm
         qwiki_reload
         qwiki_start
     }
 
-    profile_start() {
-        sudo rm -r /var/www/qwikis/core/bin/nytprof*
+    disable() {
+        sudo sed -i '/\$app->plugin( NYTProf => \$mojoConfig );/d' /var/www/qwikis/core/lib/Qwiki/Common/Infrastructure/Api/App.pm
+        qwiki_reload
         qwiki_start
     }
 
     compile() {
-        cd /var/www/qwikis/core/bin
-        sudo -u www-data nytprofmerge --out=nytprof-merged.out nytprof.out.*
-        sudo -u www-data nytprofhtml -f nytprof-merged.out -o /opt/repos/nytprof
+        cd /var/www/qwikis/core/profiles
+        sudo -u www-data nytprofhtml -f nytprof* -o /opt/repos/nytprof
         cd -
     }
 
@@ -95,12 +76,6 @@ USAGE
         disable )
             disable
             ;;
-        start )
-            profile_start
-            ;;
-        stop )
-            qwiki_stop
-            ;;
         compile )
             compile
             ;;
@@ -113,7 +88,7 @@ USAGE
 _qprofile-completion()
 {
     local cur="${COMP_WORDS[COMP_CWORD]}"
-    COMPREPLY=( $(compgen -W "enable disable start stop compile -h" -- $cur) )
+    COMPREPLY=( $(compgen -W "enable disable compile -h" -- $cur) )
 }
 
 
