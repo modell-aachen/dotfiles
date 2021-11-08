@@ -1,7 +1,11 @@
 qorbo() {
     echo "Sometimes the application hangs, just press Ctrl+D to continue"
 
-    sudo systemctl stop qwiki.service events.qwiki.service
+    sudo systemctl stop \
+        qwiki.service \
+        events.qwiki.service \
+        event.publisher.qwiki.service \
+        event.worker.qwiki.service
 
     cd $FOSWIKI_ROOT/bin
 
