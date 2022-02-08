@@ -11,7 +11,7 @@ qorbo() {
 
     sudo -u www-data \
         env $(cat /etc/default/qwiki 2>/dev/null | xargs) \
-        morbo -w /opt/repos/QwikiContrib/core/lib --listen http://localhost:1337 ./qwiki
+        morbo -w /opt/repos/QwikiContrib/core/lib --listen http://127.0.0.1:1337 ./qwiki
 
     cd - > /dev/null
 }
